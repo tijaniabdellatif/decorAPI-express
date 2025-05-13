@@ -50,41 +50,30 @@ jobs:
 
       - name: Build package
         run: |
-          # Debug the environment
-          echo "Current directory: $(pwd)"
-          echo "Directory contents before build:"
-          ls -la
-
-          # Create dist directory and run build
           mkdir -p dist
           bun run build || (echo "Build failed" && exit 1)
 
-          # Check build output
-          echo "Directory contents after build:"
-          ls -la
           echo "Dist directory contents:"
           ls -la dist || echo "Dist directory is empty or doesn't exist"
-
-          # Create a test file as a backup
-          echo "This is a test file" > dist/test.txt
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-files # Changed name to avoid conflicts
+          name: dist-files
           path: dist
-          if-no-files-found: error # Fail if no files are found
+          if-no-files-found: error
 
   release:
     name: Semantic Release
     needs: build
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
+    # THIS IS CRITICAL - make sure these permissions are set
     permissions:
       contents: write
       issues: write
       pull-requests: write
-      packages: write
+      packages: write # For publishing to GitHub Packages
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -123,15 +112,22 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      # Build again as a backup
       - name: Build package again
         run: |
           bun run build || echo "Build failed but continuing"
           echo "Dist directory contents after rebuild:"
           ls -la dist
 
+      # Use the default GITHUB_TOKEN in .npmrc
+      - name: Setup .npmrc for GitHub Packages
+        run: |
+          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com/" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          cat .npmrc
+
       - name: Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Use the default GITHUB_TOKEN for semantic-release
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
