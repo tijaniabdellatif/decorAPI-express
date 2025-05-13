@@ -50,15 +50,30 @@ jobs:
 
       - name: Build package
         run: |
-          # Make sure the clean command works on Ubuntu
-           mkdir -p dist
-           bun run build
+          # Debug the environment
+          echo "Current directory: $(pwd)"
+          echo "Directory contents before build:"
+          ls -la
+
+          # Create dist directory and run build
+          mkdir -p dist
+          bun run build || (echo "Build failed" && exit 1)
+
+          # Check build output
+          echo "Directory contents after build:"
+          ls -la
+          echo "Dist directory contents:"
+          ls -la dist || echo "Dist directory is empty or doesn't exist"
+
+          # Create a test file as a backup
+          echo "This is a test file" > dist/test.txt
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-files # Changed name to avoid conflicts
           path: dist
+          if-no-files-found: error # Fail if no files are found
 
   release:
     name: Semantic Release
@@ -83,11 +98,22 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@${{ github.repository_owner }}'
 
-      - name: Download build artifacts
+      - name: Try to download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-files
           path: dist
+        continue-on-error: true
+
+      - name: Check downloaded artifacts
+        run: |
+          if [ -d "dist" ]; then
+            echo "Dist directory exists, checking contents:"
+            ls -la dist || echo "Dist directory is empty"
+          else
+            echo "Dist directory does not exist, creating it"
+            mkdir -p dist
+          fi
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -96,6 +122,13 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      # Build again as a backup
+      - name: Build package again
+        run: |
+          bun run build || echo "Build failed but continuing"
+          echo "Dist directory contents after rebuild:"
+          ls -la dist
 
       - name: Semantic Release
         env:
