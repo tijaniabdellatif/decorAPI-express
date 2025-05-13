@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "bun run clean && tsc",
+    "build": "bun run clean && bun build ./src/index.ts --outdir ./dist --target=node",
     "test:report": "bun test --reporter=spec",
     "test": "bun test",
     "test:watch": "bun test --watch",
