@@ -1,5 +1,4 @@
 import { type ConfigSchema } from '@/types/index.js';
-
 export class EnvConfig {
   private static instance: EnvConfig;
   private config: Record<string, string> = {};
