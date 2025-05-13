@@ -1,4 +1,4 @@
-import { type ConfigSchema } from '@/types';
+import { type ConfigSchema } from '@/types/index.js';
 
 export class EnvConfig {
   private static instance: EnvConfig;

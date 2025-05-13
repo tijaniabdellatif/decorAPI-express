@@ -1,27 +1,23 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
+    "declaration": true,
+    "outDir": "./dist",
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "types": ["bun-types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "outDir": "dist",
-    "sourceMap": true,
+    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "isolatedModules": false,
+    "allowArbitraryExtensions": true /* Change this to false */
   },
-  "include": ["src/**/*", "test/**/*", "*.ts", "*.js"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*.test.ts"]
 }
