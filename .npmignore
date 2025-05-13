@@ -1,0 +1,15 @@
+.github/
+node_modules/
+src/
+test/
+.eslintrc.json
+.eslintrc.js
+eslint.config.js
+.prettierrc
+.releaserc.json
+tsconfig.json
+.gitignore
+.npmrc
+bun.lockb
+*.log
+coverage/
