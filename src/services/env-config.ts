@@ -1,4 +1,4 @@
-import { type ConfigSchema } from "../types";
+import { type ConfigSchema } from "@/types";
 
 export class EnvConfig {
   private static instance: EnvConfig;
@@ -30,5 +30,13 @@ export class EnvConfig {
 
       this.config[key] = value || defaultValue || "";
     }
+  }
+
+  public get(key: string): string {
+    if (key in this.config) {
+      return this.config[key].toString();
+    }
+
+    throw new Error("Missing required environment variable: " + key);
   }
 }

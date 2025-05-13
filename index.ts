@@ -1,1 +1,7 @@
-console.log("Hello via Bun!");
+import {ConfigSchema} from './src/types';
+
+
+export {
+
+    ConfigSchema
+}

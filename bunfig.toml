@@ -1,5 +1,7 @@
 [test]
 preload = ["./test/setup.ts"]
+# Note: we're using 'default' export from the reporter
+reporter = { module = "./test/reporter.ts", default = true }
 
 [run]
 modules = true
