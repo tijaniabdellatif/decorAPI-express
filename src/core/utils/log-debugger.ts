@@ -250,3 +250,5 @@ class LogDebugger {
     this.log(label, data, LogType.INFO, options);
   }
 }
+
+export const debug = LogDebugger.getInstance();
